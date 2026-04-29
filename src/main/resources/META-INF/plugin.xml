@@ -1,0 +1,51 @@
+<idea-plugin>
+    <id>dev.sivalabs.sdd.plugin</id>
+    <name>SDD</name>
+    <vendor url="https://sivalabs.dev">SivaLabs</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+
+    <description>
+        <![CDATA[
+            Spec Driven Development using AI Agents.<br><br>
+            Surfaces the SDD workflow (analyse → plan → implement → review → archive) as a
+            first-class IDE experience with a Pipeline progress view, Plan checklist, and
+            status bar indicator.
+        ]]>
+    </description>
+
+    <change-notes>
+        <![CDATA[
+            <ul>
+                <li><b>1.0.1</b> Phase 1 MVP: Pipeline tab, Plan tab, status bar indicator.</li>
+                <li><b>1.0.0</b> Initial Release.</li>
+            </ul>
+        ]]>
+    </change-notes>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <!-- Project-level service that reads feature.md / plan.md / review.md and owns SddState -->
+        <projectService serviceImplementation="dev.sivalabs.sdd.plugin.service.SddStateService"/>
+
+        <!-- Project-level service that paints gutter annotations for review findings -->
+        <projectService serviceImplementation="dev.sivalabs.sdd.plugin.gutter.SddGutterAnnotationService"/>
+
+        <!-- Bottom tool window with Pipeline, Spec, Plan, Review tabs -->
+        <toolWindow id="SDD"
+                    displayName="SDD"
+                    anchor="bottom"
+                    doNotActivateOnStart="true"
+                    factoryClass="dev.sivalabs.sdd.plugin.ui.SddToolWindowFactory"/>
+
+        <!-- Status bar widget (click to open the tool window) -->
+        <statusBarWidgetFactory id="SddStatusBarWidget"
+                                implementation="dev.sivalabs.sdd.plugin.statusbar.SddStatusBarWidgetFactory"
+                                order="after Position"/>
+
+        <!-- Eagerly initialize both services so gutter annotations work before the tool window opens -->
+        <postStartupActivity implementation="dev.sivalabs.sdd.plugin.startup.SddStartupActivity"/>
+
+    </extensions>
+</idea-plugin>
